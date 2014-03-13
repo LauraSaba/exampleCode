@@ -1,0 +1,22 @@
+##############################################################
+##  Create index for mm10 that:                             ##
+##   -  does not contain extra contig or mitochondrial DNA  ##
+##   -  does include sequences for synthetic spike-ins      ##
+##                                                          ##
+##  Created 3/13/14 by LMS                                  ##
+##############################################################
+
+## eliminate any chromosome that starts with 'JH' or 'GL' or 'MT'
+
+sed '/>JH/,/>/{//!d}' mm10.fa | sed '/>JH/d' | sed '/>GL/,/>/{//!d}' | sed '/>GL/d' | sed '/>MT/,/>/{//!d}' | sed '/>MT/d' > mm10.revised.fa
+
+export PATH=$HOME/bin:$PATH
+export PYTHONPATH=$HOME/bin:$PYTHONPATH
+
+cd /data/Tabastore3/LauraS/LXS/RNA-Seq/index/
+
+## add synthetic spike-in sequences for alignment
+cat /data/Tabastore3/LauraS/BXD/RNA-Seq/GeneNetwork/index/mm10.revised.fa /data/Tabastore3/LauraS/BxH.HxB.Rats/RNA-Seq/spikeSource/ERCC92.fa > mm10.revised.wSpikes.fa
+
+##  create bowtie indices
+bowtie2-build mm10.revised.wSpikes.fa mm10.revised.wSpikes
